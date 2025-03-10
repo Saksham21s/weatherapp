@@ -174,7 +174,7 @@ const WeatherInfo = ({ weatherData, locationName, isDarkMode }) => {
                 </div>
 
                 <div className="weather-card hourly-forecast-card">
-                    <h2>Hourly Forecast</h2>
+                    <h2 id="hourly-forecast">Hourly Forecast</h2>
                     <div className="hourly-forecast-items">
                         {getHourlyForecastItems().map((hour, index) => (
                             <div className="hourly-forecast-item" key={index}>

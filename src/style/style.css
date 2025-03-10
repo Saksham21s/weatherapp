@@ -15,12 +15,12 @@
   --current-date-color: #666;
 
   /* Dark Mode Colors */
-  --dark-bg-color: #222;
+  --dark-bg-color: linear-gradient(to right, #383838, #9E9E9E);
   --dark-text-color: #fff;
-  --dark-card-bg: #333;
+  --dark-card-bg: #313131;
   --dark-card-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
-  --dark-input-bg: rgba(255, 255, 255, 0.1);
-  --dark-input-focus-bg: rgba(255, 255, 255, 0.2);
+  --dark-input-bg: #313131;
+  --dark-input-focus-bg: #313131;
   --dark-button-bg: #3fa312;
   --dark-button-hover-bg: #4cbb17;
   --dark-icon-color: #ff6090;
@@ -579,4 +579,8 @@ input:checked + .slider:before {
 .bottom-cards {
   display: flex;
   justify-content: space-between;
+}
+
+#hourly-forecast{
+  margin-bottom: 2rem;
 }

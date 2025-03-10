@@ -28,8 +28,8 @@ const TemperatureChart = ({ hourlyTemperatures, hourlyTimes }) => {
             {
                 label: "Temperature (°C)",
                 data: hourlyTemperatures,
-                borderColor: "rgb(254, 143, 53)",
-                backgroundColor: "rgba(233, 129, 60, 0.2)",
+                borderColor: "rgb(34, 229, 255)",
+                backgroundColor: "rgba(76, 225, 245, 0.2)",
                 fill: true,
             },
         ],
