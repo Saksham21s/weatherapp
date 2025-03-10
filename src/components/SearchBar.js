@@ -8,7 +8,7 @@ const SearchBar = ({ onSearch, onDarkModeToggle, darkMode }) => {
 
     useEffect(() => {
         const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"));
-        if (savedDarkMode !== null) {
+        if (savedDarkMode !== null && savedDarkMode !== darkMode) {
             onDarkModeToggle(savedDarkMode);
         }
     }, []);
@@ -42,16 +42,7 @@ const SearchBar = ({ onSearch, onDarkModeToggle, darkMode }) => {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
                     const { latitude, longitude } = position.coords;
-                    try {
-                        const geocodeData = await geocodeCity(latitude, longitude);
-                        if (geocodeData.results && geocodeData.results.length > 0) {
-                            onSearch(latitude, longitude);
-                        } else {
-                            console.error("Location not found");
-                        }
-                    } catch (error) {
-                        console.error("Error fetching geocode data:", error);
-                    }
+                    onSearch(latitude, longitude);
                 },
                 (error) => {
                     console.error("Error getting current location:", error);
@@ -62,6 +53,10 @@ const SearchBar = ({ onSearch, onDarkModeToggle, darkMode }) => {
         }
     };
 
+    const handleToggleChange = (e) => {
+        onDarkModeToggle(e.target.checked);
+    };
+
     return (
         <div className="search-bar-container">
             <div className="toggle-button">
@@ -69,7 +64,7 @@ const SearchBar = ({ onSearch, onDarkModeToggle, darkMode }) => {
                     <input
                         type="checkbox"
                         checked={darkMode}
-                        onChange={(e) => onDarkModeToggle(e.target.checked)}
+                        onChange={handleToggleChange}
                     />
                     <span className="slider round"></span>
                 </label>
@@ -95,10 +90,11 @@ const SearchBar = ({ onSearch, onDarkModeToggle, darkMode }) => {
                     onClick={handleCitySearch}
                     style={{
                         position: "absolute",
-                        right: "10px",
+                        right: "15px",
                         top: "50%",
                         transform: "translateY(-50%)",
                         cursor: "pointer",
+                        color: "rgb(94, 130, 244)"
                     }}
                 />
             </div>

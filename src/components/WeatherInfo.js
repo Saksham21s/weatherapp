@@ -1,14 +1,28 @@
 import React from "react";
-import { WiDaySunny, WiCloudy, WiRain, WiSnow, WiThunderstorm } from "react-icons/wi";
+import { WiDaySunny, WiCloudy, WiRain, WiSnow, WiThunderstorm, WiNightClear } from "react-icons/wi";
 import straightWind from "../assets/straight-wind.png";
 import leftWind from "../assets/left-wind.png";
 import rightWind from "../assets/right-wind.png";
 import TemperatureChart from "./TemperatureChart";
+import Loader from "./Loader";
 
-const WeatherInfo = ({ weatherData, locationName, isDarkMode }) => {
-    if (!weatherData || !weatherData.hourly || !weatherData.daily) return null;
+const WeatherInfo = ({ weatherData, isDarkMode }) => {
+    if (!weatherData || Object.keys(weatherData).length === 0) {
+        return <Loader />;
+    }
 
-    const { current_weather, daily, hourly } = weatherData;
+    const { current_weather, daily, hourly, timezone } = weatherData;
+
+    const getDayOrNightInfo = () => {
+        const now = new Date();
+        const locationTime = new Date(now.toLocaleString("en-US", { timeZone: timezone }));
+        const hour = locationTime.getHours();
+        if (hour >= 6 && hour < 18) {
+            return { icon: <WiDaySunny className="day-night-icon" /> };
+        } else {
+            return { icon: <WiNightClear className="day-night-icon" /> };
+        }
+    };
 
     const getWeatherType = (weatherCode) => {
         const code = weatherCode ?? 0;
@@ -31,7 +45,7 @@ const WeatherInfo = ({ weatherData, locationName, isDarkMode }) => {
             82: "Rainy",
             95: "Thunderstorm",
             96: "Thunderstorm",
-            99: "Thunderstorm"
+            99: "Thunderstorm",
         };
         return types[code] || "Sunny";
     };
@@ -57,7 +71,7 @@ const WeatherInfo = ({ weatherData, locationName, isDarkMode }) => {
             82: <WiRain className="weather-icon" />,
             95: <WiThunderstorm className="weather-icon" />,
             96: <WiThunderstorm className="weather-icon" />,
-            99: <WiThunderstorm className="weather-icon" />
+            99: <WiThunderstorm className="weather-icon" />,
         };
         return icons[code] || <WiDaySunny className="weather-icon" />;
     };
@@ -75,39 +89,38 @@ const WeatherInfo = ({ weatherData, locationName, isDarkMode }) => {
     };
 
     const getHourlyForecastItems = () => {
-        try {
-            const now = Date.now();
-            return (hourly?.time || []).map((time, index) => ({
-                time: new Date(time),
-                temperature: hourly?.temperature_2m?.[index] ?? "--",
-                windspeed: hourly?.windspeed_10m?.[index] ?? "--",
-                winddirection: hourly?.winddirection_10m?.[index] ?? 0,
-                weathercode: hourly?.weathercode?.[index] ?? 0
-            }))
-            .filter(entry => entry.time > now)
-            .slice(0, 5);
-        } catch {
+        if (!hourly || !hourly.time || !hourly.windspeed_10m || !hourly.temperature_2m) {
             return [];
         }
-    };
 
-    const getCityName = () => {
-        if (!locationName) return "Dehradun";
-        try {
-            const [city] = locationName.split(',');
-            return city.trim();
-        } catch {
-            return "Current Location";
-        }
+        const now = new Date();
+        const locationTime = new Date(now.toLocaleString("en-US", { timeZone: timezone }));
+        const locationNow = locationTime.getTime();
+
+        const maxCards = window.innerWidth <= 480 ? 6 : 5;
+
+        return hourly.time
+            .map((time, index) => {
+                const parsedTime = new Date(time);
+                return {
+                    time: parsedTime,
+                    temperature: hourly.temperature_2m[index] ?? "--",
+                    windspeed: hourly.windspeed_10m[index] ?? "--",
+                    winddirection: hourly.winddirection_10m[index] ?? 0,
+                    weathercode: hourly.weathercode[index] ?? 0,
+                };
+            })
+            .filter((entry) => entry.time.getTime() > locationNow)
+            .slice(0, maxCards);
     };
 
     const formatDate = () => {
         try {
             return new Date().toLocaleDateString("en-US", {
-                timeZone: weatherData.timezone,
-                month: 'short',
-                day: '2-digit',
-                year: 'numeric'
+                timeZone: timezone,
+                month: "short",
+                day: "2-digit",
+                year: "numeric",
             });
         } catch {
             return new Date().toLocaleDateString("en-US");
@@ -115,19 +128,23 @@ const WeatherInfo = ({ weatherData, locationName, isDarkMode }) => {
     };
 
     const hourlyTemperatures = hourly?.temperature_2m?.slice(0, 24) || [];
-    const hourlyTimes = hourly?.time?.slice(0, 24).map(time => new Date(time).toLocaleTimeString("en-US", { hour: "numeric" })) || [];
+    const hourlyTimes = hourly?.time?.slice(0, 24).map((time) => new Date(time).toLocaleTimeString("en-US", { hour: "numeric" })) || [];
 
     return (
-        <div className={`weather-info-container ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
+        <div className={`weather-info-container ${isDarkMode ? "dark-mode" : "light-mode"}`}>
             <div className="top-cards">
                 <div className="weather-card location-card">
-                    <h2 className="location-name">{getCityName()}</h2>
+                    <h2 className="location-name">{weatherData?.timezone || "Timezone not found"}</h2>
                     <div className="current-time">
-                        {new Date().toLocaleTimeString("en-US", { 
-                            timeZone: weatherData.timezone, 
-                            hour: "2-digit", 
-                            minute: "2-digit" 
+                        {new Date().toLocaleTimeString("en-US", {
+                            timeZone: timezone,
+                            hour: "2-digit",
+                            minute: "2-digit",
                         })}
+                    </div>
+                    <div className="day-night-indicator">
+                        {getDayOrNightInfo().icon}
+                        <p>{getDayOrNightInfo().label}</p>
                     </div>
                     <p className="current-date">{formatDate()}</p>
                 </div>
@@ -136,13 +153,9 @@ const WeatherInfo = ({ weatherData, locationName, isDarkMode }) => {
                     <h2>Current Weather</h2>
                     <div className="current-weather-content">
                         <div className="weather-details">
-                            <div className="temperature">
-                                {current_weather?.temperature ?? '--'}°C
-                            </div>
+                            <div className="temperature">{current_weather?.temperature ?? "--"}°C</div>
                             {getWeatherIcon(current_weather?.weathercode)}
-                            <div className="weather-type">
-                                {getWeatherType(current_weather?.weathercode)}
-                            </div>
+                            <div className="weather-type">{getWeatherType(current_weather?.weathercode)}</div>
                         </div>
                         <div className="chart-container">
                             <TemperatureChart hourlyTemperatures={hourlyTemperatures} hourlyTimes={hourlyTimes} />
@@ -158,15 +171,9 @@ const WeatherInfo = ({ weatherData, locationName, isDarkMode }) => {
                         {(daily?.time || []).slice(0, 5).map((time, index) => (
                             <div className="daily-forecast-item" key={time}>
                                 {getWeatherIcon(daily?.weathercode?.[index])}
-                                <div className="forecast-temp">
-                                    {daily?.temperature_2m_max?.[index] ?? '--'}°C
-                                </div>
+                                <div className="forecast-temp">{daily?.temperature_2m_max?.[index] ?? "--"}°C</div>
                                 <div className="forecast-date">
-                                    {new Date(time).toLocaleDateString("en-US", { 
-                                        weekday: "short", 
-                                        month: "short", 
-                                        day: "numeric" 
-                                    })}
+                                    {new Date(time).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
                                 </div>
                             </div>
                         ))}
@@ -179,20 +186,12 @@ const WeatherInfo = ({ weatherData, locationName, isDarkMode }) => {
                         {getHourlyForecastItems().map((hour, index) => (
                             <div className="hourly-forecast-item" key={index}>
                                 <div className="hourly-time">
-                                    {hour.time.toLocaleTimeString("en-US", { 
-                                        hour: "numeric" 
-                                    })}
+                                    {hour.time.toLocaleTimeString("en-US", { hour: "numeric" })}
                                 </div>
                                 {getWeatherIcon(hour.weathercode)}
-                                <div className="hourly-temp">
-                                    {hour.temperature}°C
-                                </div>
+                                <div className="hourly-temp">{hour.temperature}°C</div>
                                 <div className="hourly-wind">
-                                    <img
-                                        src={getWindDirectionImage(hour.winddirection)}
-                                        alt="Wind Direction"
-                                        className="wind-icon"
-                                    />
+                                    <img src={getWindDirectionImage(hour.winddirection)} alt="Wind Direction" className="wind-icon" />
                                     <span>{hour.windspeed} km/h</span>
                                 </div>
                             </div>
