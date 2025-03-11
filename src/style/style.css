@@ -126,6 +126,10 @@ body.dark-mode {
 }
 
 .city-input::placeholder {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+body.dark-mode .city-input::placeholder {
   color: rgba(255, 255, 255, 0.8);
 }
 
@@ -133,6 +137,7 @@ body.dark-mode {
   background: var(--input-focus-bg);
   box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
 }
+
 
 .current-location-button {
   display: flex;
