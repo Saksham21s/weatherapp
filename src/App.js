@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { getWeatherData, geocodeCity } from "./api/openMeteo";
 import SearchBar from "./components/SearchBar";
 import WeatherInfo from "./components/WeatherInfo";
 import Loader from "./components/Loader";
+import FormPage from "./components/FormPage";
 import "./style/style.css";
+
+const Home = ({ handleSearch, handleDarkModeToggle, darkMode, loading, weatherData, locationName }) => (
+  <div className="app-container">
+    <SearchBar onSearch={handleSearch} onDarkModeToggle={handleDarkModeToggle} darkMode={darkMode} />
+    {loading ? <Loader /> : weatherData && <WeatherInfo weatherData={weatherData} locationName={locationName} isDarkMode={darkMode} />}
+  </div>
+);
 
 const App = () => {
   const [weatherData, setWeatherData] = useState(null);
@@ -58,10 +67,22 @@ const App = () => {
   };
 
   return (
-    <div className="app-container">
-      <SearchBar onSearch={handleSearch} onDarkModeToggle={handleDarkModeToggle} darkMode={darkMode} />
-      {loading ? <Loader /> : weatherData && <WeatherInfo weatherData={weatherData} locationName={locationName} isDarkMode={darkMode} />}
-    </div>
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={<Home 
+            handleSearch={handleSearch} 
+            handleDarkModeToggle={handleDarkModeToggle} 
+            darkMode={darkMode} 
+            loading={loading} 
+            weatherData={weatherData} 
+            locationName={locationName} 
+          />}
+        />
+        <Route path="/form" element={<FormPage />} />
+      </Routes>
+    </Router>
   );
 };
 
