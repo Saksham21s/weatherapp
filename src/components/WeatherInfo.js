@@ -1,3 +1,4 @@
+// WeatherInfo.js
 import React from "react";
 import { WiDaySunny, WiCloudy, WiRain, WiSnow, WiThunderstorm, WiNightClear } from "react-icons/wi";
 import straightWind from "../assets/straight-wind.png";
@@ -6,7 +7,7 @@ import rightWind from "../assets/right-wind.png";
 import TemperatureChart from "./TemperatureChart";
 import Loader from "./Loader";
 
-const WeatherInfo = ({ weatherData, isDarkMode }) => {
+const WeatherInfo = ({ weatherData, isDarkMode, locationName }) => {
     if (!weatherData || Object.keys(weatherData).length === 0) {
         return <Loader />;
     }
@@ -18,9 +19,9 @@ const WeatherInfo = ({ weatherData, isDarkMode }) => {
         const locationTime = new Date(now.toLocaleString("en-US", { timeZone: timezone }));
         const hour = locationTime.getHours();
         if (hour >= 6 && hour < 18) {
-            return { icon: <WiDaySunny className="day-night-icon" /> };
+            return { icon: <WiDaySunny className="day-night-icon" />, label: "Day" };
         } else {
-            return { icon: <WiNightClear className="day-night-icon" /> };
+            return { icon: <WiNightClear className="day-night-icon" />, label: "Night" };
         }
     };
 
@@ -134,7 +135,7 @@ const WeatherInfo = ({ weatherData, isDarkMode }) => {
         <div className={`weather-info-container ${isDarkMode ? "dark-mode" : "light-mode"}`}>
             <div className="top-cards">
                 <div className="weather-card location-card">
-                    <h2 className="location-name">{weatherData?.timezone || "Timezone not found"}</h2>
+                    <h2 className="location-name">{locationName || "Current Location"}</h2>
                     <div className="current-time">
                         {new Date().toLocaleTimeString("en-US", {
                             timeZone: timezone,

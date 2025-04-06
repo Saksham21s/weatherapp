@@ -1,3 +1,4 @@
+// SearchBar.js
 import React, { useState, useEffect } from "react";
 import { geocodeCity } from "../api/openMeteo";
 import { FaSearch, FaMapMarkerAlt } from "react-icons/fa";
@@ -26,9 +27,11 @@ const SearchBar = ({ onSearch, onDarkModeToggle, darkMode }) => {
         if (!city.trim()) return;
         try {
             const geocodeData = await geocodeCity(city);
-            if (geocodeData.results && geocodeData.results.length > 0) {
-                const { latitude, longitude } = geocodeData.results[0];
-                onSearch(latitude, longitude);
+            if (Array.isArray(geocodeData)) {
+                const firstResult = geocodeData[0];
+                const { lat, lon, display_name } = firstResult;
+                const locationName = display_name.split(",")[0]; // Get just the city name
+                onSearch(lat, lon, locationName);
             } else {
                 console.error("City not found");
             }
@@ -42,7 +45,20 @@ const SearchBar = ({ onSearch, onDarkModeToggle, darkMode }) => {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
                     const { latitude, longitude } = position.coords;
-                    onSearch(latitude, longitude);
+                    try {
+                        const geocodeData = await geocodeCity(latitude, longitude);
+                        if (geocodeData.address) {
+                            const locationName = geocodeData.address.city ||
+                                geocodeData.address.town ||
+                                geocodeData.address.village ||
+                                "Current Location";
+                            onSearch(latitude, longitude, locationName);
+                        } else {
+                            onSearch(latitude, longitude, "Current Location");
+                        }
+                    } catch (error) {
+                        onSearch(latitude, longitude, "Current Location");
+                    }
                 },
                 (error) => {
                     console.error("Error getting current location:", error);

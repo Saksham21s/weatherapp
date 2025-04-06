@@ -1,35 +1,40 @@
 :root {
   /* Light Mode Colors */
-  --bg-color: #e3f2fd; 
-  --text-color: #212121;
-  --card-bg: #ffffff;
-  --card-shadow: 8px 8px 15px rgba(0, 0, 0);
-  --input-bg: #ffffff;
-  --input-focus-bg: #f1f8ff;
-  --button-bg: #0077ff; 
-  --button-hover-bg: #005ecb;
-  --icon-color: #ff5252; 
-  --temperature-color: linear-gradient(to right, #212121, white);
-  --wind-speed-color: rgba(0, 0, 0, 0.85);
-  --current-time-color: #212121;
-  --current-date-color: #616161;
+  --bg-color: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --text-color: #2d3748;
+  --card-bg: rgba(255, 255, 255, 0.9);
+  --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --input-bg: rgba(255, 255, 255, 0.8);
+  --input-focus-bg: rgba(255, 255, 255, 0.95);
+  --button-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --button-hover-bg: linear-gradient(135deg, #5a6fd1 0%, #6a3d9a 100%);
+  --icon-color: #4a5568;
+  --temperature-color: linear-gradient(to right, #2d3748, #4a5568);
+  --wind-speed-color: #4a5568;
+  --current-time-color: #2d3748;
+  --current-date-color: #718096;
+  --accent-color: #667eea;
+  --glass-effect: rgba(255, 255, 255, 0.3);
+  --glass-border: rgba(255, 255, 255, 0.4);
 
   /* Dark Mode Colors */
-  --dark-bg-color: linear-gradient(to right, #121212, #2c2c2c);
-  --dark-text-color: #e0e0e0;
-  --dark-card-bg: #1e1e1e;
-  --dark-card-shadow: 0 6px 12px  rgba(0, 0, 0);
-  --dark-input-bg: #2a2a2a;
-  --dark-input-focus-bg: #333;
-  --dark-button-bg: #0077ff;
-  --dark-button-hover-bg: #3399ff;
-  --dark-icon-color: #ff4081;
-  --dark-temperature-color: #e0e0e0;
-  --dark-wind-speed-color: rgba(255, 255, 255, 0.85);
-  --dark-current-time-color: #e0e0e0;
-  --dark-current-date-color: #bdbdbd;
+  --dark-bg-color: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+  --dark-text-color: #e2e8f0;
+  --dark-card-bg: rgba(26, 32, 44, 0.9);
+  --dark-card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  --dark-input-bg: rgba(26, 32, 44, 0.8);
+  --dark-input-focus-bg: rgba(45, 55, 72, 0.95);
+  --dark-button-bg: linear-gradient(135deg, #7f53ac 0%, #647dee 100%);
+  --dark-button-hover-bg: linear-gradient(135deg, #6e45a2 0%, #5469d4 100%);
+  --dark-icon-color: #e2e8f0;
+  --dark-temperature-color: linear-gradient(to right, #e2e8f0, #a0aec0);
+  --dark-wind-speed-color: #a0aec0;
+  --dark-current-time-color: #e2e8f0;
+  --dark-current-date-color: #a0aec0;
+  --dark-accent-color: #7f53ac;
+  --dark-glass-effect: rgba(26, 32, 44, 0.3);
+  --dark-glass-border: rgba(26, 32, 44, 0.4);
 }
-
 
 /* Global Styles */
 body {
@@ -55,6 +60,9 @@ body.dark-mode {
   --wind-speed-color: var(--dark-wind-speed-color);
   --current-time-color: var(--dark-current-time-color);
   --current-date-color: var(--dark-current-date-color);
+  --accent-color: var(--dark-accent-color);
+  --glass-effect: var(--dark-glass-effect);
+  --glass-border: var(--dark-glass-border);
 }
 
 *,

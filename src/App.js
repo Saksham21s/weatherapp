@@ -21,17 +21,32 @@ const App = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchWeatherData = async () => {
+    const fetchInitialData = async () => {
       setLoading(true);
       try {
-        const data = await getWeatherData(30.3165, 78.0322);
-        setWeatherData(data);
+        // Default coordinates for Dehradun
+        const lat = 30.3165;
+        const lon = 78.0322;
+        
+        // Fetch weather data
+        const weather = await getWeatherData(lat, lon);
+        setWeatherData(weather);
+        
+        // Fetch location name
+        const geoData = await geocodeCity(lat, lon);
+        if (geoData.address) {
+          const { city, town, village, county, state, country } = geoData.address;
+          const name = city || town || village || "Unknown Location";
+          const region = state || county || "";
+          setLocationName(`${name}${region ? `, ${region}` : ''}${country ? `, ${country}` : ''}`);
+        }
       } catch (error) {
-        console.error("Error fetching initial weather data:", error);
+        console.error("Error fetching initial data:", error);
       }
       setLoading(false);
     };
-    fetchWeatherData();
+    
+    fetchInitialData();
   }, []);
 
   useEffect(() => {
@@ -43,21 +58,31 @@ const App = () => {
     localStorage.setItem("darkMode", darkMode);
   }, [darkMode]);
 
-  const handleSearch = async (latitude, longitude) => {
+  const handleSearch = async (latitude, longitude, name = null) => {
     setLoading(true);
     try {
+      // Fetch weather data first
       const data = await getWeatherData(latitude, longitude);
       setWeatherData(data);
-
-      const geocodeData = await geocodeCity(latitude, longitude);
-      if (geocodeData.results && geocodeData.results.length > 0) {
-        const { name, admin1, country } = geocodeData.results[0];
-        setLocationName(`${name}, ${admin1}, ${country}`);
+      
+      // If name was provided (from SearchBar), use that
+      if (name) {
+        setLocationName(name);
       } else {
-        setLocationName("Location not found");
+        // Otherwise fetch location name
+        const geoData = await geocodeCity(latitude, longitude);
+        if (geoData.address) {
+          const { city, town, village, county, state, country } = geoData.address;
+          const locationName = city || town || village || "Current Location";
+          const region = state || county || "";
+          setLocationName(`${locationName}${region ? `, ${region}` : ''}${country ? `, ${country}` : ''}`);
+        } else {
+          setLocationName("Current Location");
+        }
       }
     } catch (error) {
-      console.error("Error fetching weather data after search:", error);
+      console.error("Error fetching weather data:", error);
+      setLocationName("Location not found");
     }
     setLoading(false);
   };
