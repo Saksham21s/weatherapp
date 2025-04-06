@@ -167,7 +167,7 @@ const WeatherInfo = ({ weatherData, isDarkMode, locationName }) => {
 
             <div className="forecast-container">
                 <div className="weather-card daily-forecast-card">
-                    <h2>4-Day Forecast</h2>
+                    <h2>Daily Forecast</h2>
                     <div className="daily-forecast-items">
                         {(daily?.time || []).slice(0, 5).map((time, index) => (
                             <div className="daily-forecast-item" key={time}>
